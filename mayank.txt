@@ -1,0 +1,187 @@
+<?php
+    session_start();
+    include './functions.php';
+    if(isset($_SESSION["uemail"])){
+        $uemail=$_SESSION["uemail"];
+        $uid=$_SESSION['uid']; 
+        try{
+            $conn=connect('trustbook'); 
+            $stmtdefault=$conn->prepare("select * from userinfo where email=:uemail");
+            $stmtdefault->execute(array('uemail'=>$uemail));
+            $rowdefault=$stmtdefault->fetch();
+        }
+        catch (PDOException $e){
+            $e->getMessage();
+        } 
+    }
+    else{
+        redirect('./index.php');
+    }
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Friends requests</title>
+        <link rel="stylesheet" type="text/css" href="homepage.css">
+    </head>
+    <body>
+        <div class="header">
+        <h1><a href="home.php">trustbook</a></h1>
+	<h3><?php echo $rowdefault[1]; ?></h3>
+        <?php 
+        if($rowdefault[12]=='blank'){
+            echo "<img src='images/unknown.jpg' id='dp'style='height: 130px;width: 110px;border-radius: 6px;'/>";
+        }
+        else{
+            echo "<img src='test.php' alt='img' style='height: 130px;width: 110px;border-radius: 6px;' id='dp'>";
+        }
+        ?>
+	</div>
+	<div class="leftbar">
+	<a href="editprofile.php">Want to edit profile?</a><br>
+        <a href="profile.php">View profile</a><br>
+        <a href="friends.php">Friends</a><br>
+        <a href="pendingrequest.php">Pending friend requests</a><br>
+        <form action="findfriends.php" method="GET">
+            <input type="name" name="key">
+            <input type="submit" value="Search"/>
+        </form>
+        <a href="logout.php">Log out</a>
+	</div>
+        <div class="pagecontent">
+            
+
+<?php
+    include './mongeElkan.php';
+    if(isset($_SESSION["uemail"])){
+        $uemail=$_SESSION["uemail"];
+        try{
+            $conn=connect('trustbook'); 
+            $stmt=$conn->prepare("select * from userinfo where email=:uemail");
+            $stmt->execute(array('uemail'=>$uemail));
+            $row=$stmt->fetch();
+        }
+        catch (PDOException $e){
+            $e->getMessage();
+        }        
+    }
+    else{
+        redirect('./index.php');
+    }
+    $uid1=$row[0];
+    $uid2=$_POST["sender"];
+    try{
+        $stmt1=$conn->prepare("select * from userinfo where uid=:uid");
+        $stmt1->execute(array('uid'=>$uid2));
+        $row1=$stmt1->fetch();
+    }
+    catch (PDOException $e){
+        $e->getMessage();
+    } 
+    $array=array();
+    //echo 'Monge Elkan similarity values<br>';
+    for ($index = 6; $index < 17; $index++) {
+        $temp1=strtolower(str_replace(',',' ',$row[$index]));
+        $temp2=strtolower(str_replace(',',' ',$row1[$index]));
+        if($temp1!=NULL && $temp2!=NULL)
+            $array[$index-6]=mongeElkan(explode(' ',$temp1),explode(' ',$temp2));
+        else {
+            $array[$index-6]=0;
+        }
+        //echo $index-6;
+        //echo "=>";
+        //echo round($array[$index-6],2);
+        //echo "<br>";
+    }
+    
+    
+    $countReceiver=0;
+    try{
+            $conn->exec("TRUNCATE friend1");
+            $conn->exec("TRUNCATE friend2");
+            $stmt1="SELECT * FROM relationship WHERE (user_one_id = ".$uid1." OR user_two_id =".$uid1.") AND status = 1"; 
+            $stmt2="SELECT * FROM relationship WHERE (user_one_id = ".$uid2." OR user_two_id =".$uid2.") AND status = 1";
+            foreach ($conn->query($stmt1) as $row1) {                 
+                 if($row1[0]==$uid1){
+                     $friend1=$row1[1];
+                 }
+                 else {
+                     $friend1=$row1[0];
+                 }
+                 $ins1=$conn->prepare("INSERT into friend1 values(:friendid)");
+                 $ins1->execute(array('friendid'=>$friend1));
+                 $countReceiver=$countReceiver+1;
+            }
+            foreach ($conn->query($stmt2) as $row2) {                 
+                 if($row2[0]==$uid2){
+                     $friend2=$row2[1];
+                 }
+                 else {
+                     $friend2=$row2[0];
+                 }
+                 $ins2=$conn->prepare("INSERT into friend2 values(:friendid)");
+                 $ins2->execute(array('friendid'=>$friend2));
+            }
+            $count=0;
+            $join="SELECT * FROM friend1,friend2 where friend1.friendid=friend2.friendid";
+            foreach ($conn->query($join) as $row) {
+                $count=$count+1;
+            }
+            $array[11]=$count/$countReceiver;
+            //echo "11=>".$array[11];
+            
+            $array1=array();
+            $preference=$_POST["preference"];
+            
+            $temp=$array[$preference];
+            $array[$preference]=$array[0];
+            $array[0]=$temp;
+            
+            for ($index1 = 1; $index1 < 12; $index1++) {
+                $array1[$index1-1]=$array[$index1];
+            }
+            rsort($array1);
+            
+            for ($index1 = 1; $index1 < 12; $index1++) {
+                $array[$index1]=$array1[$index1-1];
+            }
+            
+            $alpha = 0.0;
+            for ($index2 = 0; $index2 < 12; $index2++) {
+                $alpha += (12-$index2-1)*$array[$index2];
+            }
+            $alpha = $alpha/((12-1)*10);
+            //echo "<br><br>alpha=".round($alpha,3);
+            if($alpha>0.5){
+                $alpha=1-$alpha;
+            }
+            $min = 10000000;
+            $w=array();
+            $w[0]=$alpha;
+            for ($i = 1; $i <= 11; $i++) {
+                $w[$i]=(1-$alpha)/11;
+            }
+            
+            $trust = 0.0;
+            for ($i = 0; $i < 12; $i++) {
+                $trust += $array[$i]*$w[$i]*100;
+            }
+            
+            echo '<br><br>Trust score based on profile matching='.round($trust,2)."%<br>";    
+            $conn->exec("TRUNCATE friend1");
+            $conn->exec("TRUNCATE friend2");
+            if($trust>=40){
+                echo "The user is trustworthy enough according to our system. Do you want to accept friend request?<br><button><a href='./confirmfriend.php'>Yes</button><button><a 				href='./declinerequest.php'>No</button><button><a href='./pendingrequest.php'>Change 					Preference</a></button>";
+            }
+            else {
+                echo "The user is not much trustworthy according to our system. Do you want to accept friend request?<br><button><a href='./confirmfriend.php'>Yes</button><button><a 				href='./declinerequest.php'>No</button><button><a href='./pendingrequest.php'>Change 					Preference</a></button>";
+            }
+    }
+    catch(PDOException $e){
+        $e->getMessage();
+    }
+?>
+            </div>
+    </body>
+</html>

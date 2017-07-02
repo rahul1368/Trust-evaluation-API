@@ -1,0 +1,6 @@
+<button><a href='confirmfriend.php?uid=".$sender."'>Confirm</a></button><br>
+
+/*if (isset($_POST['Confirm'])) 
+                     { 
+                        $_SESSION['sender'] = $sender;
+                     }*/

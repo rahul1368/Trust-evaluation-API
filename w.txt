@@ -1,0 +1,98 @@
+Thing
+	Profile_info
+		Hometown
+			Bulandshahr
+	Location
+		Current_Location
+			Current_city
+				Patna
+			State
+				Bihar
+			Country
+				India
+		Past_Location
+			city
+				Bulandshahr
+			State
+				Uttar Pradesh
+			Country
+				India
+	Education
+		Primary_Education
+			Primary_school_name
+				M.A.S Public School
+			Primary_school_city
+				Lacchoi
+			Primary_school_state
+				Uttar Pradesh
+			Primary_school_country
+				India
+			Primary_school_timespan
+				1998-2004
+		High_school_Education
+			High_school_name
+				S.V.M Inter College
+			High_school_city
+				Jahangirabad
+			High_school_state
+				Uttar Pradesh
+			High_school_country
+				India
+			High_school_timespan
+				2008-2009
+		12th_Education
+			12th_school_name
+				S.V.M Inter College
+			12th_school_city
+				Jahangirabad
+			12th_school_state
+				Uttar Pradesh
+			12th_school_country
+				India
+			12th_school_timespan
+				2010-2011
+		Undergrad_Education
+			Undergrad_school_name
+				NIT Patna
+			Undergrad_school_city
+				Patna
+			Undergrad_school_state
+				Bihar
+			Undergrad_school_country
+				India
+			Undergrad_school_timespan
+				2013-2017
+		Postgrad_Education
+			Postgrad_school_name
+				NA
+			Postgrad_school_city
+				NA
+			Postgrad_school_state
+				NA
+			Postgrad_school_country
+				NA
+			Postgrad_school_timespan
+				NA
+	Profession
+		Past_Profession
+			Job_Title
+				Trainee Software Engineer
+			Employer
+				ICE Technology Lab
+			Time span
+				2017-2019
+		Current_Profession
+			Job_title
+				Software Designer
+			Employer
+				SAP Labs
+			Working_city
+				Puna
+			Working_state
+				Maharastrya
+			Working_country
+				India
+		Relationship_Status
+			Single
+		Language_known
+			Hindi & English

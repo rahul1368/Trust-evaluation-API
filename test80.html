@@ -1,0 +1,22 @@
+<html>
+<h1>@Trustbook <h1>
+<body>
+<?php
+    $uemail=$_SESSION['uemail'];
+	 $conn=mysqli_connect("localhost", "root", "15061994", "trustbook1");
+	  $sql1="select uid from user_profile where email='$uemail'";
+$result=mysqli_query($conn,$sql1);
+$row=mysqli_fetch_assoc($result);
+if($result==False){echo "Not Sucessfull connection in register.php";}
+$uid=$row['uid'];
+$sql2="INSERT INTO `location_info`(`uid`, `current_city`, `current_state`, `hometown`, `past_city`, `past_state`, `country`, `place_of_birth`) VALUES ($uid,'','','','','','','')"; ;
+	 $result1=mysqli_query($conn,$sql2); 
+	$sql3="INSERT INTO `user_education`(`uid`, `10th_school_city`, `10th_school_state`, `10th_school_country`, `10th_school_name`, `timespan_of_10th`, `12th_school_city`, `12th_school_state`, `12th_school_country`, `12th_school_name`, `timespan_of_12th`, `primary_school_city`, `primary_school_state`, `primary_school_country`, `primary_school_name`, `timespan_of_primary`, `undergraduation_city`, `undergraduation_state`, `undergraduation_country`, `ug_college_name`, `timespan_of_ug`, `postgraduation_city`, `postgraduation_state`, `postgraduation_country`, `pg_college_name`, `timespan_of_pg`) VALUES ($uid,'','','','','','','','','','','','','','','','','','','','','','','','','');";
+	 $result2=mysqli_query($conn,$sql3); 
+$sql4="INSERT INTO `user_profession`(`uid`, `working_city`, `working_state`, `working_country`, `current_company_name`, `timespan_of_working`, `previous_job_title`, `current_job_title`, `previous_company`, `Relationship_status`, `Language_known`) VALUES ($uid,'','','','','','','','','','');";
+	 $result3=mysqli_query($conn,$sql4);
+	 echo"Hi guys";
+?>	
+ 
+ 
+ <a   href="facebook login.php">Back To Login.</a> </body></html>
